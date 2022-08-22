@@ -3,6 +3,7 @@
 #include "common.h"
 
 enum class Category { Get, Set, City, Weather, Fact };
+using ResultList = std::vector<Category>;
 
 template<>
 struct std::formatter<Category> : std::formatter<std::string_view>
@@ -46,8 +47,21 @@ struct Repository
 {
     // aus Dateien/Streams lesen?
     // single and multi-term keyword lists 
+    void init()
+    {
+        std::ifstream file("../repository.file");
+        if (file.is_open())
+        {
+            std::transform(
+                std::istream_iterator<std::string>(file),
+                std::istream_iterator<std::string>(),
+                std::inserter(m_meanings, m_meanings.begin()),
+                [](auto str) -> std::pair<std::string, Category> { return { "", Category::Fact }; }
+            );
+        }
+    }
 
-    Result findIntent(const StringList& input)
+    Result findIntent(const StringList& input) const
     {
         Result result;
         for (auto& word : input)
@@ -61,8 +75,9 @@ struct Repository
         return result;
     }
 
-    std::map<std::string, Category> m_meanings
-	 { {
+private:
+    std::unordered_map<std::string, Category> m_meanings
+    { {
         {"what", Category::Get},
         {"when", Category::Get},
         {"who", Category::Get},
@@ -91,6 +106,17 @@ struct Recognizer
     void init()
     {
         // file import stop words?
+        m_repo.init();
+
+        std::ifstream file("../stopword.file");
+        if (file.is_open())
+        {
+            std::copy(
+                std::istream_iterator<std::string>(file),
+                std::istream_iterator<std::string>(),
+                std::inserter(m_stopwords, m_stopwords.begin())
+            );
+        }
     }
 
     Result calculate(std::string_view input)

@@ -1,15 +1,20 @@
 #pragma once
 
+#include <algorithm>
 #include <iostream>
+#include <iterator>
 #include <format>
+#include <fstream>
+#include <map>
+#include <numeric>
 #include <optional>
 #include <ranges>
 #include <set>
-#include <unordered_set>
-#include <map>
-#include <unordered_map>
+#include <sstream>
 #include <string>
 #include <string_view>
+#include <unordered_set>
+#include <unordered_map>
 #include <vector>
 
 
@@ -20,4 +25,3 @@ void print(std::string_view format, Args&&... args)
 }
 
 using StringList = std::vector<std::string>;
-

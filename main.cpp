@@ -7,12 +7,11 @@ struct Console
     {
         print("Embedded Intent Recognizer\n");
 
+        m_engine.init();
+
         while (auto input = readInput())
         {
-            (*input) = "What is   the weather   like in Paris   today ?"; // debug
-            //(*input) = "What is the weather like today?"; // Prints (Intent: Get Weather)
-            //(*input) = "What is the weather like in Paris today ?"; // = > Prints(Intent: Get Weather City)
-            //(*input) = "Tell me an interesting fact."; // = > Prints(Intent: Get Fact)
+            //(*input) = "What is the weather like today?";
 
             print("Input: {}\n", input.value());
             auto intent = m_engine.calculate(input.value());
