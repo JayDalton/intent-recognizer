@@ -15,12 +15,8 @@ struct Console
             //(*input) = "Tell me an interesting fact."; // = > Prints(Intent: Get Fact)
 
             print("Input: {}\n", input.value());
-            
-            auto content_words = m_engine.normalize(input.value());
-
-            // auto res = std::ranges::join_view(content_words);
-            
-            print("Intent: {}", input);
+            auto intent = m_engine.calculate(input.value());
+            print("Intend: {}\n", intent.to_string());
         }
 
         print("End!\n");

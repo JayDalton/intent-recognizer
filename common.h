@@ -4,6 +4,10 @@
 #include <format>
 #include <optional>
 #include <ranges>
+#include <set>
+#include <unordered_set>
+#include <map>
+#include <unordered_map>
 #include <string>
 #include <string_view>
 #include <vector>

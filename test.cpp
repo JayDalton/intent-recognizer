@@ -5,12 +5,12 @@
 
 #include "recognizer.h"
 
-static constexpr auto txt1{"The dog jumps high! 123"};
-static constexpr auto txt2{"nobody  is   perfect :/"};
-static constexpr auto txt3{"Once uppon a Time... "};
-
 
 TEST_CASE( "normalize a string", "[recognizer]" ) {
+
+	constexpr auto txt1{"The dog jumps high! 123"};
+	constexpr auto txt2{"nobody  is   perfect :/"};
+	constexpr auto txt3{"Once uppon a Time... "};
 
 	Recognizer engine;
 
@@ -37,3 +37,63 @@ TEST_CASE( "normalize a string", "[recognizer]" ) {
 
 }
 
+TEST_CASE( "extract words without stopwords", "[recognizer]" ) {
+
+	StringList arr1{"what", "is", "the", "weather", "like", "today"};
+	StringList arr2{"what", "is", "the", "weather", "like", "in", "paris", "today"};
+	StringList arr3{"tell", "me", "an", "interesting", "fact"};
+
+	Recognizer engine;
+
+	CHECK_THAT(engine.exctract(arr1), 
+		Catch::Equals(StringList{"what", "weather", "like", "today"}));
+
+	CHECK_THAT(engine.exctract(arr2), 
+		Catch::Equals(StringList{"what", "weather", "like", "paris", "today"}));
+
+	CHECK_THAT(engine.exctract(arr3), 
+		Catch::Equals(StringList{"tell", "interesting", "fact"}));
+
+	BENCHMARK("Exctract 1") {
+		return engine.exctract(arr1);
+	};
+	
+	BENCHMARK("Exctract 2") {
+		return engine.exctract(arr2);
+	};
+
+	BENCHMARK("Exctract 3") {
+		return engine.exctract(arr3);
+	};
+
+}
+
+TEST_CASE( "calculate intent", "[recognizer]" ) {
+
+   constexpr auto txt1{"What is the weather like today?"};
+   constexpr auto txt2{"What is the weather like in Paris today ?"};
+   constexpr auto txt3{"Tell me an interesting fact."};
+
+	Recognizer engine;
+
+	CHECK_THAT(engine.calculate(txt1), 
+		Catch::Equals(Result{{Category::Get, Category::Weather}}));
+
+	CHECK_THAT(engine.calculate(txt2), 
+		Catch::Equals(Result{{Category::Get, Category::Weather, Category::City}}));
+
+	CHECK_THAT(engine.calculate(txt3), 
+		Catch::Equals(Result{{Category::Fact}}));
+
+	BENCHMARK("Calculate 1") {
+		return engine.calculate(txt1);
+	};
+	
+	BENCHMARK("Calculate 2") {
+		return engine.calculate(txt2);
+	};
+
+	BENCHMARK("Calculate 3") {
+		return engine.calculate(txt3);
+	};
+}
