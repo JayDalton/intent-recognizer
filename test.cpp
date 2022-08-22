@@ -1,16 +1,39 @@
 #define CATCH_CONFIG_MAIN
+#define CATCH_CONFIG_ENABLE_BENCHMARKING
 #include <catch2/catch.hpp>
 //#include "catch.hpp"
 
-unsigned int Factorial( unsigned int number ) {
-    return number <= 1 ? number : Factorial(number-1)*number;
-}
+#include "recognizer.h"
 
-TEST_CASE( "Factorials are computed", "[factorial]" ) {
-    REQUIRE( Factorial(0) == 1 );
-    REQUIRE( Factorial(1) == 1 );
-    REQUIRE( Factorial(2) == 2 );
-    REQUIRE( Factorial(3) == 6 );
-    REQUIRE( Factorial(10) == 3628800 );
+static constexpr auto txt1{"The dog jumps high! 123"};
+static constexpr auto txt2{"nobody  is   perfect :/"};
+static constexpr auto txt3{"Once uppon a Time... "};
+
+
+TEST_CASE( "normalize a string", "[recognizer]" ) {
+
+	Recognizer engine;
+
+	CHECK_THAT(engine.normalize(txt1), 
+		Catch::Equals(StringList{"the", "dog", "jumps", "high"}));
+
+	CHECK_THAT(engine.normalize(txt2), 
+		Catch::Equals(StringList{"nobody", "is", "perfect"}));
+
+	CHECK_THAT(engine.normalize(txt3), 
+		Catch::Equals(StringList{"once", "uppon", "a", "time"}));
+
+	BENCHMARK("Normalize 1") {
+		return engine.normalize(txt1);
+	};
+	
+	BENCHMARK("Normalize 2") {
+		return engine.normalize(txt2);
+	};
+
+	BENCHMARK("Normalize 3") {
+		return engine.normalize(txt3);
+	};
+
 }
 

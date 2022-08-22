@@ -8,6 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(SOURCE_FILES 
     common.h
     main.cpp
+    recognizer.h
 )
 
 add_executable(recognizer ${SOURCE_FILES})

@@ -1,4 +1,5 @@
 #include "common.h"
+#include "recognizer.h"
 
 struct Console
 {
@@ -8,18 +9,23 @@ struct Console
 
         while (auto input = readInput())
         {
-            //(*input) = "What is   the weather   like in Paris   today ?"; // debug
+            (*input) = "What is   the weather   like in Paris   today ?"; // debug
             //(*input) = "What is the weather like today?"; // Prints (Intent: Get Weather)
             //(*input) = "What is the weather like in Paris today ?"; // = > Prints(Intent: Get Weather City)
             //(*input) = "Tell me an interesting fact."; // = > Prints(Intent: Get Fact)
 
             print("Input: {}\n", input.value());
+            
+            auto content_words = m_engine.normalize(input.value());
+
+            // auto res = std::ranges::join_view(content_words);
+            
+            print("Intent: {}", input);
         }
 
         print("End!\n");
         return {};
     }
-
 
 private:
     std::optional<std::string> readInput()
@@ -39,9 +45,12 @@ private:
             catch (...) {}
         }
     }
+
+private:
+    Recognizer m_engine;
 };
 
-// mkdir build && cd build && cmake .. && cmake --build .
+// mkdir build && cd build && cmake .. && cmake --build . --config Release
 
 auto main() -> int
 {
