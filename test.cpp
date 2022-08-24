@@ -46,13 +46,13 @@ TEST_CASE( "extract words without stopwords", "[recognizer]" ) {
 	Recognizer engine;
 
 	CHECK_THAT(engine.exctract(arr1), 
-		Catch::Equals(StringList{"what", "weather", "like", "today"}));
+		Catch::Equals(ResultList{{Category::Get, Category::Weather}}));
 
 	CHECK_THAT(engine.exctract(arr2), 
-		Catch::Equals(StringList{"what", "weather", "like", "paris", "today"}));
+		Catch::Equals(ResultList{{Category::Get, Category::Weather, Category::City}}));
 
 	CHECK_THAT(engine.exctract(arr3), 
-		Catch::Equals(StringList{"tell", "interesting", "fact"}));
+		Catch::Equals(ResultList{{Category::Fact}}));
 
 	BENCHMARK("Exctract 1") {
 		return engine.exctract(arr1);
@@ -68,32 +68,27 @@ TEST_CASE( "extract words without stopwords", "[recognizer]" ) {
 
 }
 
-TEST_CASE( "calculate intent", "[recognizer]" ) {
+TEST_CASE( "isStopword", "[repository]" ) {
 
    constexpr auto txt1{"What is the weather like today?"};
    constexpr auto txt2{"What is the weather like in Paris today ?"};
    constexpr auto txt3{"Tell me an interesting fact."};
 
-	Recognizer engine;
+	Repository repo;
 
-	CHECK_THAT(engine.calculate(txt1), 
-		Catch::Equals(Result{{Category::Get, Category::Weather}}));
-
-	CHECK_THAT(engine.calculate(txt2), 
-		Catch::Equals(Result{{Category::Get, Category::Weather, Category::City}}));
-
-	CHECK_THAT(engine.calculate(txt3), 
-		Catch::Equals(Result{{Category::Fact}}));
+	CHECK(repo.isStopword("is"));
+	CHECK(repo.isStopword("in"));
+	CHECK(repo.isStopword("an"));
 
 	BENCHMARK("Calculate 1") {
-		return engine.calculate(txt1);
+		return repo.isStopword("is");
 	};
 	
 	BENCHMARK("Calculate 2") {
-		return engine.calculate(txt2);
+		return repo.isStopword("in");
 	};
 
 	BENCHMARK("Calculate 3") {
-		return engine.calculate(txt3);
+		return repo.isStopword("an");
 	};
 }
