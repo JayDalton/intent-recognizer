@@ -9,15 +9,16 @@ struct Console
     {
         print("Embedded Intent Recognizer\n");
 
-        init();
+        // load custom dictionaries
+        // m_engine.initCustom(); 
 
         while (auto input = readInput())
         {
-            //(*input) = "What is the weather like today?";
+            (*input) = "What is the weather like today?";
 
             print("Input: {}\n", input.value());
             auto intent = m_engine.calculate(input.value());
-            print("Intend: {}\n", intent.to_string());
+            print("Intend: {}\n", format(intent));
         }
 
         print("End!\n");
@@ -43,9 +44,16 @@ private:
         }
     }
 
-    void init()
+    std::string format(const ResultList& input) const
     {
-        m_engine.init();
+        std::string result;
+        // std::ostringstream stream{result};
+        for (auto& category : input)
+        {
+            std::format_to(std::back_inserter(result), "{} ", category);
+            // std::format_to(stream, "{} ", category);
+        }
+        return result;
     }
 
 private:
