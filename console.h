@@ -14,7 +14,8 @@ struct Console
 
         while (auto input = readInput())
         {
-            (*input) = "What is the weather like today?";
+            // some variations of input
+            (*input) = "Whats the weather like in Bärlin today?";
 
             print("Input: {}\n", input.value());
             auto intent = m_engine.calculate(input.value());
@@ -47,11 +48,9 @@ private:
     std::string format(const ResultList& input) const
     {
         std::string result;
-        // std::ostringstream stream{result};
         for (auto& category : input)
         {
             std::format_to(std::back_inserter(result), "{} ", category);
-            // std::format_to(stream, "{} ", category);
         }
         return result;
     }

@@ -2,7 +2,10 @@
 
 #include "common.h"
 
+// Intent classes as enum, could also be 
 enum class Category { Get, Set, City, Weather, Fact };
+
+// list / set of intents
 using ResultList = std::vector<Category>;
 
 template<>
@@ -33,10 +36,9 @@ struct std::formatter<Category> : std::formatter<std::string_view>
 
 struct Repository
 {
-    // aus Dateien/Streams lesen?
-    // single and multi-term keyword lists 
     void init()
     {
+        // read optional custom data
         importStopWordList();
         importWordRootList();
         importWordMeaning();
@@ -62,6 +64,9 @@ struct Repository
     std::optional<Category> getIntent(const std::string& word) const
     {
         // try find meaning of word
+        // one word can have multiple meanings
+        // should be weigted list by context?
+
         if (m_meanings.contains(word))
         {
             return m_meanings.at(word);
@@ -75,115 +80,34 @@ protected:
         std::ifstream file("../wordstop.file");
         if (file.is_open())
         {
-            print("stop.file\n");
             std::copy(
                 std::istream_iterator<std::string>{file},
                 std::istream_iterator<std::string>(),
                 std::inserter(m_stopwords, m_stopwords.begin())
-                // std::ostream_iterator<std::string>(std::cout, "\n")
             );
-            print("\n");
         }
     }
 
     void importWordRootList()
     {
-        std::ifstream file("../wordroot.file");
-        if (file.is_open())
-        {
-            print("root.file\n");
-            // auto formatter = [](std::string line) -> std::pair<std::string, std::string> 
-            // { 
-            //     std::istringstream iss{line};
-            //     std::vector<std::string> results(
-            //         std::istream_iterator<std::string>{iss},
-            //         std::istream_iterator<std::string>()
-            //     );
-
-            //     if (results.size() != 2)
-            //     {
-            //         throw std::exception("");
-            //     }
-
-            //     return { results.at(0), results.at(1) };
-            // };
-            
-            std::transform(
-                std::istream_iterator<std::string>{file},
-                std::istream_iterator<std::string>(),
-                std::inserter(m_rootword, m_rootword.begin()),
-                [](std::string line) -> std::pair<std::string, std::string> { 
-                    std::istringstream iss{line};
-                    std::vector<std::string> results(
-                        std::istream_iterator<std::string>{iss},
-                        std::istream_iterator<std::string>()
-                    );
-
-                    if (results.size() != 2)
-                    {
-                        throw std::exception("");
-                    }
-
-                    return { results.at(0), results.at(1) };
-                }
-            );
-        }
+        // not implemented
     }
 
     void importWordMeaning()
     {
-        std::ifstream file("../wordmean.file");
-        if (file.is_open())
-        {
-            print("mean.file\n");
-            std::copy(
-                std::istream_iterator<std::string>{file},
-                std::istream_iterator<std::string>(),
-                // std::inserter(m_stopwords, m_stopwords.begin())
-                std::ostream_iterator<std::string>(std::cout, "\n")
-            );
-            print("\n");
-            std::transform(
-                std::istream_iterator<std::string>{file},
-                std::istream_iterator<std::string>(),
-                std::inserter(m_meanings, m_meanings.begin()),
-                [](std::string line) -> std::pair<std::string, Category> { 
-                    std::istringstream iss{line};
-                    std::vector<std::string> results(
-                        std::istream_iterator<std::string>{iss},
-                        std::istream_iterator<std::string>()
-                    );
-
-                    if (results.size() != 2)
-                    {
-                        throw std::exception("");
-                    }
-
-                    // auto to_int = [](const std::string& str) -> std::optional<int>
-                    // {
-                    //     if (int value{0}; std::from_chars(str.data(), str.data() + str.size(), value).ec == std::errc{})
-                    //         return value;
-                    //     else
-                    //         return std::nullopt;
-                    // };
-
-                    // very very dirty hack :/
-                    const int value{std::atoi(results.at(1).data())};
-                    return { results.at(0), static_cast<Category>(value) };
-                }
-            );
-        }
+        // not implemented
     }
 
 private:
+    // medium sized dataset
 	std::unordered_set<std::string> m_stopwords{ 
 		"is", "not", "that", "there", "are", "can", "the",
 		"you", "with", "of", "those", "after", "all", "one",
 		"me", "an", "a", "in"
 	};
 
-    // very big dataset
-    std::unordered_map<std::string, std::string> m_rootword
+    // very big dataset, needs quick read access
+    std::map<std::string, std::string> m_rootword
     { {
         {"eating", "eat"},
         {"eaten", "eat"},
@@ -201,8 +125,8 @@ private:
 
     }};
 
-    // very big dataset
-    std::unordered_map<std::string, Category> m_meanings
+    // very big dataset, needs quick read access
+    std::map<std::string, Category> m_meanings
     { {
         {"what", Category::Get},
         {"when", Category::Get},
@@ -228,7 +152,7 @@ private:
 };
 
 // using proper interfaces makes impl exchangable
-// prefer composition to inheritance, e.g. std::variant
+// prefer composition over inheritance, e.g. std::variant
 struct IRecognizer
 {
     virtual ResultList calculate(std::string_view input) = 0;
@@ -238,11 +162,15 @@ struct Recognizer : public IRecognizer
 {
     void initCustom()
     {
+        // load optional custom data
         std::call_once(m_init, [this](){ m_repo.init(); });
     }
 
     ResultList calculate(std::string_view input)
     {
+        // no idea of nlp-ai based black-box
+        // so do it mannually...
+
         // do normalize
         auto word_list = normalize(input);
 
@@ -252,6 +180,13 @@ struct Recognizer : public IRecognizer
 
     StringList normalize(std::string_view input)
     {
+        // filter unimportant noise
+        // normalize input data by
+        // a) filter non-alpha
+        // b) format to lower
+        // c) split by spaces
+        // d) parallelize algo
+
         using namespace std::views;
 
         auto words = input 
@@ -268,9 +203,15 @@ struct Recognizer : public IRecognizer
 
     ResultList exctract(const StringList& words)
     {
+        // find possible intent to words by
+        // a) filter unimportant noise by stopwords
+        // b) transform words to their root / stem
+        // c) try find meaning of word
+        // d) parallelize algo
+
         using namespace std::views;
 
-        auto data = words
+        auto intent = words
             | filter([this](const std::string& word) { return !m_repo.isStopword(word); })
             | transform([this](const std::string& word) { return m_repo.findRoot(word); })
             | transform([this](const std::string& word) { return m_repo.getIntent(word); })
@@ -278,7 +219,7 @@ struct Recognizer : public IRecognizer
             | transform([](auto&& opt){ return opt.value(); })
         ;
 
-        return {data.begin(), data.end()};
+        return {intent.begin(), intent.end()};
     }
 
 private:
