@@ -5,57 +5,15 @@
 
 struct Console
 {
-    int run()
-    {
-        print("Embedded Intent Recognizer\n");
+    int run();
 
-        // load custom dictionaries
-        // m_engine.initCustom(); 
+protected:
+    std::optional<std::string> readInput();
 
-        while (auto input = readInput())
-        {
-            // some variations of input
-            (*input) = "Whats the weather like in Bärlin today?";
-
-            print("Input: {}\n", input.value());
-            auto intent = m_engine.calculate(input.value());
-            print("Intend: {}\n", format(intent));
-        }
-
-        print("End!\n");
-        return {};
-    }
+    std::string format(const ResultList& input) const;
 
 private:
-    std::optional<std::string> readInput()
-    {
-        while (true)
-        {
-            try
-            {
-                print("Input: ");
-                std::string input;
-                std::getline(std::cin, input);
-                if (!input.empty()) {
-                    return input;
-                }
-                return std::nullopt;
-            }
-            catch (...) {}
-        }
-    }
-
-    std::string format(const ResultList& input) const
-    {
-        std::string result;
-        for (auto& category : input)
-        {
-            std::format_to(std::back_inserter(result), "{} ", category);
-        }
-        return result;
-    }
-
-private:
+    // need Interface for different impl?
     Recognizer m_engine;
 };
 
