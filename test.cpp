@@ -5,6 +5,30 @@
 
 #include "recognizer.h"
 
+TEST_CASE( "isStopword", "[repository]" ) {
+
+   constexpr auto txt1{"What is the weather like today?"};
+   constexpr auto txt2{"What is the weather like in Paris today ?"};
+   constexpr auto txt3{"Tell me an interesting fact."};
+
+	Repository repo;
+
+	CHECK(repo.isStopword("is"));
+	CHECK(repo.isStopword("in"));
+	CHECK(repo.isStopword("an"));
+
+	BENCHMARK("IsStopword 1") {
+		return repo.isStopword("is");
+	};
+	
+	BENCHMARK("IsStopword 2") {
+		return repo.isStopword("in");
+	};
+
+	BENCHMARK("IsStopword 3") {
+		return repo.isStopword("an");
+	};
+}
 
 TEST_CASE( "normalize a string", "[recognizer]" ) {
 
@@ -34,7 +58,6 @@ TEST_CASE( "normalize a string", "[recognizer]" ) {
 	BENCHMARK("Normalize 3") {
 		return engine.normalize(txt3);
 	};
-
 }
 
 TEST_CASE( "extract words without stopwords", "[recognizer]" ) {
@@ -65,30 +88,35 @@ TEST_CASE( "extract words without stopwords", "[recognizer]" ) {
 	BENCHMARK("Exctract 3") {
 		return engine.exctract(arr3);
 	};
-
 }
 
-TEST_CASE( "isStopword", "[repository]" ) {
+TEST_CASE( "calculate intention", "[recognizer]" ) {
 
    constexpr auto txt1{"What is the weather like today?"};
    constexpr auto txt2{"What is the weather like in Paris today ?"};
    constexpr auto txt3{"Tell me an interesting fact."};
 
-	Repository repo;
+	Recognizer engine;
 
-	CHECK(repo.isStopword("is"));
-	CHECK(repo.isStopword("in"));
-	CHECK(repo.isStopword("an"));
+	CHECK_THAT(engine.calculate(txt1), 
+		Catch::Equals(ResultList{{Category::Get, Category::Weather}}));
+
+	CHECK_THAT(engine.calculate(txt2), 
+		Catch::Equals(ResultList{{Category::Get, Category::Weather, Category::City}}));
+
+	CHECK_THAT(engine.calculate(txt3), 
+		Catch::Equals(ResultList{{Category::Fact}}));
 
 	BENCHMARK("Calculate 1") {
-		return repo.isStopword("is");
+		return engine.calculate(txt1);
 	};
 	
 	BENCHMARK("Calculate 2") {
-		return repo.isStopword("in");
+		return engine.calculate(txt2);
 	};
 
 	BENCHMARK("Calculate 3") {
-		return repo.isStopword("an");
+		return engine.calculate(txt3);
 	};
 }
+
