@@ -25,9 +25,15 @@ namespace irs {
     struct C{};
     using MyType = std::variant<A, B, C>;
 
-    std::map<std::string, MyType> map;
+    std::map<std::string, MyType> map{{
+        {"abc", A{}},
+        {"xyz", B{}},
+    }};
 
     // ---
+
+    auto fun = +[](int i){ return i * i; };
+    static_assert(std::is_same_v<decltype(fun), int(*)(int)>);
 
     auto foo(auto... args) {
         print("size of: {}", sizeof...(args));
