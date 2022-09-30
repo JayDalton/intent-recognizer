@@ -17,15 +17,15 @@ struct std::formatter<Category> : std::formatter<std::string_view>
         switch (state)
         {
         case Category::Get:
-            return formatter<std::string_view>::format("Get", context);
+            return formatter<StringView>::format("Get", context);
         case Category::Set:
-            return formatter<std::string_view>::format("Set", context);
+            return formatter<StringView>::format("Set", context);
         case Category::City:
-            return formatter<std::string_view>::format("City", context);
+            return formatter<StringView>::format("City", context);
         case Category::Weather:
-            return formatter<std::string_view>::format("Weather", context);
+            return formatter<StringView>::format("Weather", context);
         case Category::Fact:
-            return formatter<std::string_view>::format("Fact", context);
+            return formatter<StringView>::format("Fact", context);
         }
 
         // unreachable
@@ -45,13 +45,13 @@ struct Repository
       importWordMeaning();
    }
 
-   auto isStopword(const std::string& word) const
+   auto isStopword(const String& word) const
    {
       // filter unnecessary words with minimal meaning
       return m_stopwords.contains(word);
    }
 
-   auto findRoot(const std::string& word) const -> std::string
+   auto findRoot(const String& word) const -> String
    {
       // find root of word to handle different semantic variations of the input
       // no idea about Stemming / Lemmatization, so do it manually
@@ -62,7 +62,7 @@ struct Repository
       return word;
    }
 
-   auto getIntent(const std::string& word) const -> std::optional<Category>
+   auto getIntent(const String& word) const -> std::optional<Category>
    {
       // try find meaning of word
       // one word can have multiple meanings
@@ -90,64 +90,61 @@ struct Repository
 
    void importWordRootList()
    {
-       // not implemented
+      // not implemented
    }
 
    void importWordMeaning()
    {
-       // not implemented
+      // not implemented
    }
 
 private:
     // medium sized dataset
-	std::unordered_set<std::string> m_stopwords{ 
-		"is", "not", "that", "there", "are", "can", "the",
-		"you", "with", "of", "those", "after", "all", "one",
-		"me", "an", "a", "in"
-	};
+   std::unordered_set<String> m_stopwords{
+      "is", "not", "that", "there", "are", "can", "the",
+      "you", "with", "of", "those", "after", "all", "one",
+      "me", "an", "a", "in"
+   };
 
-    // very big dataset, needs quick read access
-    std::map<std::string, std::string> m_rootword
-    { {
-        {"eating", "eat"},
-        {"eaten", "eat"},
-        {"eats", "eat"},
-        {"eat", "eat"},
+   // very big dataset, needs quick read access
+   std::map<String, String> m_rootword{{
+       {"eating", "eat"},
+       {"eaten", "eat"},
+       {"eats", "eat"},
+       {"eat", "eat"},
 
-        {"facts", "fact"},
-        {"fact", "fact"},
+       {"facts", "fact"},
+       {"fact", "fact"},
 
-        {"whats", "what"},
-        {"what", "what"},
+       {"whats", "what"},
+       {"what", "what"},
 
-        {"berlin", "berlin"},
-        {"bärlin", "berlin"},
-        {"baerlin", "berlin"},
+       {"berlin", "berlin"},
+       {"bärlin", "berlin"},
+       {"baerlin", "berlin"},
+   }};
 
-    }};
+   // very big dataset, needs quick read access
+   std::map<String, Category> m_meanings{{
+       {"what", Category::Get},
+       {"when", Category::Get},
+       {"who", Category::Get},
+       {"where", Category::Get},
 
-    // very big dataset, needs quick read access
-    std::map<std::string, Category> m_meanings
-    { {
-        {"what", Category::Get},
-        {"when", Category::Get},
-        {"who", Category::Get},
-        {"where", Category::Get},
+       {"show", Category::Set},
+       {"calc", Category::Set},
 
-        {"show", Category::Set},
-        {"calc", Category::Set},
+       {"berlin", Category::City},
+       {"paris", Category::City},
+       {"london", Category::City},
+       {"madrid", Category::City},
 
-        {"berlin", Category::City},
-        {"paris", Category::City},
-        {"london", Category::City},
-        {"madrid", Category::City},
+       {"weather", Category::Weather},
+       {"rain", Category::Weather},
+       {"sun", Category::Weather},
+       {"cloud", Category::Weather},
+       {"temperatur", Category::Weather},
 
-        {"weather", Category::Weather},
-        {"rain", Category::Weather},
-        {"sun", Category::Weather},
-        {"cloud", Category::Weather},
-        {"temperatur", Category::Weather},
-
-        {"fact", Category::Fact},
-    }};
+       {"fact", Category::Fact},
+   }};
 };

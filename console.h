@@ -16,7 +16,26 @@ struct Console
       {
          // some variations of input
          // (*input) = "Whats the weather like in Bärlin?";
-         // print("Input: {}\n", input.value());
+         print("Input: {}\n", input.value());
+
+         auto list = (*input)
+            | std::views::transform([](unsigned int c){ return c; })
+         ;
+
+         for (auto c : (*input))
+         {
+            print("int: {0:d};  hex: {0:#x};  oct: {0:#o};  bin: {0:#b}\n", c);
+         }
+
+         // "int: {0:d};  hex: {0:#x};  oct: {0:#o};  bin: {0:#b}"
+         print(
+            "  int: {0:d};\n"
+            "  hex: {0:#x};\n"
+            "  oct: {0:#o};\n"
+            "  bin: {0:#b}\n"
+            // , input.value()
+            , 'ä'
+         );
 
          auto intent = m_engine.calculate(input.value());
          print("Intend: {}\n", format(intent));
@@ -27,14 +46,14 @@ struct Console
    }
 
 private:
-   std::optional<std::string> readInput()
+   StringOpt readInput()
    {
        while (true)
        {
            try
            {
+               String input;
                print("Input: ");
-               std::string input;
                std::getline(std::cin, input);
                if (!input.empty()) {
                   return input;
@@ -45,9 +64,9 @@ private:
        }
    }
 
-   std::string format(const ResultList& input) const
+   String format(const ResultList& input) const
    {
-      std::string result;
+      String result;
       for (auto& category : input)
       {
          std::format_to(std::back_inserter(result), "{} ", category);

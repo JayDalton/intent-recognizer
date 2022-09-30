@@ -16,14 +16,14 @@ struct Recognizer : public IRecognizer
       std::call_once(m_init, [this](){ m_repo.init(); });
    }
 
-   auto calculate(std::string_view input) -> ResultList
+   auto calculate(StringView input) -> ResultList
    {
       // no idea of nlp-ai based black-box
       // so do it mannually...
       return exctract(normalize(input));
    }
 
-   auto normalize(std::string_view input) -> StringList
+   auto normalize(StringView input) -> StringList
    {
       using namespace std::views;
 
@@ -32,7 +32,7 @@ struct Recognizer : public IRecognizer
          | transform([](unsigned char c) { return std::tolower(c); })
          // | filter/remove consecutive spaces, C++23?
          | split(' ')
-         | transform([](auto&& c) -> std::string { return { c.begin(), c.end() }; })
+         | transform([](auto&& c) -> String { return { c.begin(), c.end() }; })
          | filter([](auto&& c) { return !c.empty(); })
       ;
 
@@ -44,9 +44,9 @@ struct Recognizer : public IRecognizer
        using namespace std::views;
 
        auto intent = words
-           | filter([this](const std::string& word) { return !m_repo.isStopword(word); })
-           | transform([this](const std::string& word) { return m_repo.findRoot(word); })
-           | transform([this](const std::string& word) { return m_repo.getIntent(word); })
+           | filter([this](const String& word) { return !m_repo.isStopword(word); })
+           | transform([this](const String& word) { return m_repo.findRoot(word); })
+           | transform([this](const String& word) { return m_repo.getIntent(word); })
            | filter([](auto&& opt){ return opt.has_value(); })
            | transform([](auto&& opt){ return opt.value(); })
        ;

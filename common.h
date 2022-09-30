@@ -22,10 +22,13 @@
 #include <variant>
 #include <vector>
 
+using String = std::string;
+using StringList = std::vector<String>;
+using StringOpt = std::optional<String>;
+using StringView = std::string_view;
+
 template <typename... Args>
-void print(std::string_view format, Args&&... args)
+void print(StringView format, Args&&... args)
 {
    std::cout << std::vformat(format, std::make_format_args(args...));
 }
-
-using StringList = std::vector<std::string>;
