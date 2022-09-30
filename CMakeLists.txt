@@ -7,11 +7,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(SOURCE_FILES 
     common.h
-    console.cpp
     console.h
     main.cpp
-    recognizer.cpp
     recognizer.h
+    repository.h
 )
 
 add_executable(recognizer ${SOURCE_FILES})
@@ -28,5 +27,5 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(Catch2)
 
 # find_package(Catch2 REQUIRED)
-add_executable(tests test.cpp recognizer.cpp)
+add_executable(tests test.cpp)
 target_link_libraries(tests Catch2::Catch2)
