@@ -120,8 +120,9 @@ private:
         {"whats", "what"},
         {"what", "what"},
 
-        {"bärlin", "berlin"},
         {"berlin", "berlin"},
+        {"bärlin", "berlin"},
+        {"baerlin", "berlin"},
 
     }};
 
@@ -150,4 +151,3 @@ private:
         {"fact", Category::Fact},
     }};
 };
-

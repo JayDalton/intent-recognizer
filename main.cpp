@@ -10,4 +10,3 @@ auto main() -> int
     Console app;
     return app.run();
 }
-

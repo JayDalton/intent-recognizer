@@ -15,8 +15,8 @@ struct Console
       while (auto input = readInput())
       {
          // some variations of input
-         (*input) = "Whats the weather like in Bärlin?";
-         print("Input: {}\n", input.value());
+         // (*input) = "Whats the weather like in Bärlin?";
+         // print("Input: {}\n", input.value());
 
          auto intent = m_engine.calculate(input.value());
          print("Intend: {}\n", format(intent));
@@ -58,5 +58,3 @@ private:
 private:
    Recognizer m_engine;
 };
-
-

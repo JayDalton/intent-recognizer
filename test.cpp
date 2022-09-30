@@ -119,4 +119,3 @@ TEST_CASE( "calculate intention", "[recognizer]" ) {
 		return engine.calculate(txt3);
 	};
 }
-
