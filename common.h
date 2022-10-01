@@ -32,3 +32,9 @@ void print(StringView format, Args&&... args)
 {
    std::cout << std::vformat(format, std::make_format_args(args...));
 }
+
+template <typename... Args>
+void print(std::wstring_view format, Args&&... args)
+{
+   std::wcout << std::vformat(format, std::make_wformat_args(args...));
+}
