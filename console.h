@@ -9,24 +9,6 @@ struct Console
    {
       print("Embedded Intent Recognizer\n");
 
-      // load custom dictionaries
-      // m_engine.initCustom(); 
-
-      while (auto input = readInputNew())
-      {
-         for (auto c : (*input))
-         {
-            print(L"int: {0:d};  hex: {0:#x};  oct: {0:#o};  bin: {0:#b}\n", c);
-         }
-
-         // print("\n");
-
-         // print("int: {0:d};  hex: {0:#x};  oct: {0:#o};  bin: {0:#b}\n", 'e');
-         // // print("int: {0:d};  hex: {0:#x};  oct: {0:#o};  bin: {0:#b}\n", L"a");
-         // print("int: {0:d};  hex: {0:#x};  oct: {0:#o};  bin: {0:#b}\n", 'ä');
-         // // print("int: {0:d};  hex: {0:#x};  oct: {0:#o};  bin: {0:#b}\n", L'ä');         
-      }
-
       while (auto input = readInput())
       {
          // some variations of input
@@ -60,7 +42,7 @@ private:
        }
    }
 
-   std::optional<std::wstring> readInputNew()
+   std::optional<std::wstring> readWInput()
    {
        while (true)
        {
